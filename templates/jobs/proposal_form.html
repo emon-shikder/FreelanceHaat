@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+<div class="max-w-4xl mx-auto mt-10">
+    <div class="bg-white shadow-md rounded-lg p-6">
+        <h1 class="text-2xl font-bold text-gray-800 mb-6">Submit Proposal for "{{ job.title }}"</h1>
+        
+        <!-- Display validation errors -->
+        {% if form.errors %}
+        <div class="bg-red-100 text-red-700 border border-red-300 rounded-md p-4 mb-4">
+            <ul>
+                {% for field, errors in form.errors.items %}
+                    {% for error in errors %}
+                        <li><strong>{{ field|title }}</strong>: {{ error }}</li>
+                    {% endfor %}
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+            {{form | crispy}}
+
+            <div class="mt-6 flex justify-between items-center">
+                <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">
+                    Submit Proposal
+                </button>
+                <a href="{% url 'jobs:job_detail' job.pk %}" class="ml-4 text-gray-600 hover:text-gray-800">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

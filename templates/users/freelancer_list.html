@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <h1 class="text-2xl font-bold mb-6">Freelancers</h1>
+    
+    <div class="grid gap-6">
+        {% for freelancer in freelancers %}
+            <div class="bg-white shadow-md rounded-lg p-6">
+                <div class="flex items-start">
+                    {% if freelancer.profile_picture %}
+                        <img src="{{ freelancer.profile_picture.url }}" alt="Profile Picture" class="w-20 h-20 rounded-full object-cover mr-4">
+                    {% endif %}
+                    <div class="flex-1">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h2 class="text-xl font-bold">{{ freelancer.get_full_name|default:freelancer.email }}</h2>
+                                {% if freelancer.hourly_rate %}
+                                    <p class="text-green-600 font-medium">${{ freelancer.hourly_rate }}/hour</p>
+                                {% endif %}
+                            </div>
+                            <a href="{% url 'users:freelancer_detail' freelancer.pk %}" class="text-indigo-600 hover:text-indigo-800">
+                                View Profile →
+                            </a>
+                        </div>
+                        
+                        <p class="text-gray-700 mt-2">{{ freelancer.bio|truncatewords:30 }}</p>
+                        
+                        {% if freelancer.skills %}
+                            <div class="mt-4">
+                                <div class="flex flex-wrap gap-2">
+                                    {% for skill in freelancer.skills.split %}
+                                        <span class="bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full text-sm">{{ skill }}</span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <p class="text-center text-gray-500">No freelancers found.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

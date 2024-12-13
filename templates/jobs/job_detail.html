@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <h1 class="text-2xl font-bold mb-2">Job Details:</h1>
+    <div class="bg-white shadow-md rounded-lg p-6 mb-6">
+        <!-- Job Details -->
+        <div class="flex justify-between items-start mb-6">
+            <div>
+                <h1 class="text-2xl font-bold mb-2">{{ job.title }}</h1>
+                <p class="text-gray-500">Posted by {{ job.client.get_full_name|default:job.client.email }}</p>
+            </div>
+            <div class="text-right">
+                <p class="text-2xl font-semibold text-green-600">${{ job.budget }}</p>
+                <p class="text-gray-500">Due {{ job.deadline|date }}</p>
+            </div>
+        </div>
+
+        <div class="prose max-w-none mb-6">
+            {{ job.description|linebreaks }}
+        </div>
+
+        <div class="mb-6">
+            <h3 class="font-semibold mb-2">Required Skills</h3>
+            <div class="flex flex-wrap gap-2">
+                {% for skill in job.skills_required.split %}
+                    <span class="bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full text-sm">{{ skill }}</span>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Proposal Submission -->
+        {% if user.user_type == 'freelancer' and not user_proposal %}
+            <div class="mt-6">
+                <a href="{% url 'jobs:submit_proposal' job.pk %}" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">
+                    Submit Proposal
+                </a>
+            </div>
+        {% endif %}
+
+        <!-- Job Management for Client -->
+        {% if user == job.client %}
+        <div class="bg-white shadow-md rounded-lg p-6 mb-6">
+            <h2 class="text-xl font-bold mb-4">Manage Job</h2>
+            
+            <div class="flex justify-start gap-4">
+                <!-- Edit Job Button -->
+                <a href="{% url 'jobs:job_edit' job.pk %}" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">
+                    Edit Job
+                </a>
+
+                <!-- Delete Job Form -->
+                <form method="post" action="{% url 'jobs:job_delete' job.pk %}">
+                    {% csrf_token %}
+                    <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700">
+                        Delete Job
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Proposals Section -->
+        <div class="bg-white shadow-md rounded-lg p-6 mb-6">
+            <h2 class="text-xl font-bold mb-4">Proposals</h2>
+            {% for proposal in job.proposals.all %}
+                <div class="border-b last:border-b-0 py-4">
+                    <div class="flex justify-between items-start mb-2">
+                        <div>
+                            <p class="font-semibold">{{ proposal.freelancer.get_full_name|default:proposal.freelancer.email }}</p>
+                            <p class="text-green-600 font-medium">${{ proposal.bid_amount }}</p>
+                        </div>
+                        {% if not proposal.accepted %}
+                            <form method="post" action="{% url 'jobs:accept_proposal' job.pk proposal.pk %}">
+                                {% csrf_token %}
+                                <button type="submit" class="bg-green-600 text-white px-3 py-1 rounded-md hover:bg-green-700">
+                                    Accept Proposal
+                                </button>
+                            </form>
+                        {% else %}
+                            <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full">Accepted</span>
+                        {% endif %}
+                    </div>
+                    <p class="text-gray-700">{{ proposal.cover_letter }}</p>
+                </div>
+            {% empty %}
+                <p class="text-gray-500">No proposals yet.</p>
+            {% endfor %}
+        </div>
+
+        <!-- Review Section -->
+        <div class="bg-white shadow-md rounded-lg p-6">
+            <h2 class="text-xl font-bold mb-4">Reviews</h2>
+
+            {% if user == job.client %}
+
+            <!-- List Existing Reviews -->
+            {% for review in job.reviews.all %}
+                <div class="border-b last:border-b-0 py-4">
+                    <p class="font-semibold text-indigo-700">{{ review.reviewer.get_full_name|default:review.reviewer.email  }}</p>
+                    <p class="text-gray-600">{{ review.comment }}</p>
+                    <p class="text-yellow-500 font-bold">Rating: {{ review.rating }}/5</p>
+                </div>
+            {% empty %}
+                <p class="text-gray-500">No reviews yet.</p>
+            {% endfor %}
+
+            <!-- Add a New Review -->
+            <!-- Review Form Section (if job is completed and client) -->
+        <div class="bg-white shadow-md rounded-lg p-6">
+            <h2 class="text-xl font-bold mb-4">Leave a Review</h2>
+            
+            {% if job.status == 'completed' %}
+                <form method="post">
+                    {% csrf_token %}
+                    {{ review_form|crispy }}
+                    <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 mt-4">
+                        Submit Review
+                    </button>
+                </form>
+            {% else %}
+                <p class="text-gray-500">You can leave a review only once the job is marked as completed.</p>
+            {% endif %}
+        </div>
+        {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

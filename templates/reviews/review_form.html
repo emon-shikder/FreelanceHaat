@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <div class="bg-white shadow-md rounded-lg p-6">
+        <h1 class="text-2xl font-bold mb-6">Write a Review</h1>
+        
+        <form method="post">
+            {% csrf_token %}
+            {{form | crispy}}
+            <div class="mt-6">
+                <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">
+                    Submit Review
+                </button>
+                <a href="{% url 'jobs:job_detail' job.pk %}" class="ml-4 text-gray-600 hover:text-gray-800">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

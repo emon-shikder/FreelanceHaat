@@ -1,0 +1,31 @@
+{% extends "base.html" %} {% load crispy_forms_tags %} {% block content %}
+<div class="max-w-md mx-auto">
+  <div class="bg-white shadow-md rounded-lg p-8">
+    <h1 class="text-2xl font-bold mb-6 text-center">Confirm Email Address</h1>
+
+    {% if confirmation %}
+    <form
+      method="post"
+      action="{% url 'account_confirm_email' confirmation.key %}"
+    >
+      {% csrf_token %}
+      <p class="text-gray-600 text-center mb-6">
+        Please confirm that {{ confirmation.email_address.email }} is your email
+        address.
+      </p>
+      <button
+        type="submit"
+        class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 transition"
+      >
+        Confirm Email
+      </button>
+    </form>
+    {% else %}
+    <p class="text-gray-600 text-center">
+      This email confirmation link has expired or is invalid. Please request a
+      new email confirmation link.
+    </p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

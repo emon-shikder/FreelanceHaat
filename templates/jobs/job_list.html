@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    {% if user.user_type == 'client' %}
+        <div class="mb-6">
+            <a href="{% url 'jobs:job_create' %}" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">
+                Post New Job
+            </a>
+        </div>
+    {% endif %}
+
+    <!-- Job Search Form -->
+<form method="get" action="{% url 'jobs:job_list' %}" class="mb-6">
+    <div class="flex">
+        <input 
+            type="text" 
+            name="q" 
+            placeholder="Search jobs by title, description, or skill" 
+            value="{{ query }}" 
+            class="w-full border border-gray-300 rounded-l-md px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+        <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-r-md hover:bg-indigo-700">
+            Search
+        </button>
+    </div>
+</form>
+
+
+    <div class="space-y-6">
+        {% for job in jobs %}
+            <div class="bg-white shadow-md rounded-lg p-6">
+                <div class="flex justify-between items-start mb-4">
+                    <div>
+                        <h2 class="text-xl font-bold">{{ job.title }}</h2>
+                        <p class="text-gray-500">Posted by {{ job.client.get_full_name|default:job.client.email }}</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-lg font-semibold text-green-600">${{ job.budget }}</p>
+                        <p class="text-sm text-gray-500">Due {{ job.deadline|date }}</p>
+                    </div>
+                </div>
+                
+                <p class="text-gray-700 mb-4">{{ job.description|truncatewords:50 }}</p>
+                
+                <div class="flex flex-wrap gap-2 mb-4">
+                    {% for skill in job.skills_required.split %}
+                        <span class="bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full text-sm">{{ skill }}</span>
+                    {% endfor %}
+                </div>
+
+                <div class="flex justify-between items-center">
+                    <span class="text-sm text-gray-500">Posted {{ job.created_at|timesince }} ago</span>
+                    <a href="{% url 'jobs:job_detail' job.pk %}" class="text-indigo-600 hover:text-indigo-800">
+                        View Details →
+                    </a>
+                </div>
+            </div>
+        {% empty %}
+            <div class="text-center py-8">
+                <p class="text-gray-500">No jobs available at the moment.</p>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

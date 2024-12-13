@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <!-- Profile Section -->
+    <div class="bg-gradient-to-r from-gray-500 to-gray-500 text-white shadow-md rounded-lg p-6 mb-6">
+        <div class="flex items-start">
+            {% if user.profile_picture %}
+            <img src="{{ profile_picture_url|default:'/static/images/default-profile.png' }}" 
+            alt="Profile Picture" 
+            class="w-32 h-32 rounded-full object-cover mr-6 shadow-lg border-4 border-white">
+            {% endif %}
+            <div class="flex-1">
+                <h1 class="text-3xl font-extrabold mb-2">
+                    <i class="fas fa-user-circle"></i> {{ user.get_full_name|default:user.email }}
+                </h1>
+                <p class="text-lg font-medium mb-2"><i class="fas fa-briefcase"></i> {{ user.user_type|title }}</p>
+                {% if user.hourly_rate %}
+                    <p class="text-lg font-medium mb-2"><i class="fas fa-dollar-sign"></i> ${{ user.hourly_rate }}/hour</p>
+                {% endif %}
+                <p class="text-lg font-light mb-4"><i class="fas fa-info-circle"></i> {{ user.bio }}</p>
+                {% if user.skills %}
+                    <div class="mb-4">
+                        <h3 class="font-bold mb-2"><i class="fas fa-cogs"></i> Skills</h3>
+                        <div class="flex flex-wrap gap-2">
+                            {% for skill in user.skills.split %}
+                                <span class="bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full text-sm font-semibold shadow-md">{{ skill }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Update Profile Section -->
+    <div class="bg-white shadow-md rounded-lg p-6 mb-6">
+        <h2 class="text-xl font-bold mb-4 text-indigo-600"><i class="fas fa-edit"></i> Update Profile</h2>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 shadow-lg transition">
+                Update Profile
+            </button>
+        </form>
+    </div>
+
+    <!-- Reviews Section -->
+    {% if reviews %}
+        <div class="bg-white shadow-md rounded-lg p-6">
+            <h2 class="text-xl font-bold mb-4 text-yellow-500"><i class="fas fa-star"></i> Reviews</h2>
+            <div class="space-y-4">
+                {% for review in reviews %}
+                    <div class="border-b pb-4">
+                        <div class="flex items-center mb-2">
+                            <div class="flex-1">
+                                <p class="font-semibold"><i class="fas fa-user"></i> {{ review.reviewer.get_full_name|default:review.reviewer.email }}</p>
+                                <div class="flex items-center">
+                                    {% for i in "12345" %}
+                                        <span class="text-yellow-400">
+                                            {% if forloop.counter <= review.rating %}★{% else %}☆{% endif %}
+                                        </span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <span class="text-gray-500 text-sm"><i class="fas fa-clock"></i> {{ review.created_at|date }}</span>
+                        </div>
+                        <p class="text-gray-700">{{ review.comment }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+
+    
+</div>
+{% endblock %}
