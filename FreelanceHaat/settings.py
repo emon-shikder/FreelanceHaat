@@ -32,7 +32,7 @@ SECRET_KEY = 'django-insecure-+lrggzb@344$(%)bfu!qyp6+t$#2y=d#kimlv83eekg*_9nh6)
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['.vercel.app','127.0.0.1','.now.sh']
+ALLOWED_HOSTS = ['.vercel.app','127.0.0.1']
 
 
 # Application definition
@@ -91,7 +91,7 @@ TEMPLATES = [
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
-WSGI_APPLICATION = 'FreelanceHaat.wsgi.application'
+WSGI_APPLICATION = 'FreelanceHaat.wsgi.app'
 
 
 # Database
