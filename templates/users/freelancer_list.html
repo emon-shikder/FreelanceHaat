@@ -19,9 +19,11 @@
                                     <p class="text-green-600 font-medium">${{ freelancer.hourly_rate }}/hour</p>
                                 {% endif %}
                             </div>
-                            <a href="{% url 'users:freelancer_detail' freelancer.pk %}" class="text-indigo-600 hover:text-indigo-800">
+                            <button class="bg-blue-600 text-white px-4 py-2 rounded-md shadow-md hover:bg-blue-700">
+                            <a href="{% url 'users:freelancer_detail' freelancer.pk %}" class=" hover:text-red-200">
                                 View Profile →
                             </a>
+                        </button>
                         </div>
                         
                         <p class="text-gray-700 mt-2">{{ freelancer.bio|truncatewords:30 }}</p>

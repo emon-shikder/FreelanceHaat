@@ -9,7 +9,7 @@ from .models import Job
 @login_required
 def job_list(request):
     query = request.GET.get('q', '')  # Get the search query
-    jobs = Job.objects.filter(status='open').order_by('-created_at')
+    jobs = Job.objects.filter(status__in=['open', 'in_progress', 'completed']).order_by('-created_at')
 
     # Filter jobs if a search query is provided
     if query:
